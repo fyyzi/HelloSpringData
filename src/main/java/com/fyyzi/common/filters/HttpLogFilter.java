@@ -45,11 +45,6 @@ public class HttpLogFilter implements Filter {
         String method = req.getMethod();
         Map<String, String[]> parameterMap = req.getParameterMap();
         Enumeration<String> headerNames = req.getHeaderNames();
-        while (headerNames.hasMoreElements()){
-            String s = headerNames.nextElement();
-            String header = req.getHeader(s);
-            System.out.println(s + ":" + header);
-        }
 
         log.info("请求路径：{}://{}:{}{} ，请求方式：{}，请求参数：{}，请求头：{}",
                 scheme, serverName, serverPort, servletPath, method, parameterMap.size() == 0 ? null : JsonFormatUtils.objectToJson(parameterMap),headerNames);

@@ -22,7 +22,7 @@ import javax.persistence.*;
 @Slf4j
 @Entity
 @Table(appliesTo = "user", comment = "一个注释")
-public class User implements Cloneable {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

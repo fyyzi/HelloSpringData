@@ -1,7 +1,5 @@
 package com.fyyzi.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,16 +25,6 @@ public class JsonFormatUtils {
      * @return String 格式 的 Json
      */
     public static String objectToJson(Object obj) {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String s = objectMapper.writeValueAsString(obj);
-            return s;
-        } catch (JsonProcessingException e) {
-            System.out.println(e);
-        }
-
-
         return GSON.toJson(obj);
     }
 
