@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fyyzi?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useLegacyDatetimeCode=false&allowMultiQueries=true&serverTimezone=GMT%2B8
+    username: root
+    password: root
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  transaction:
+    rollback-on-commit-failure: true
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 10000
+    jedis:
+      pool:
+        max-active: 1000
+        max-wait: -1ms
+        max-idle: 200
