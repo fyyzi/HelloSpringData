@@ -12,6 +12,8 @@ public enum ModuleEnum {
 
     /** 服务器内部模块 */
     COMMON(000, "common", "公共模块", "common"),
+    /** Excel导出 */
+    COMMON_EXCEL(001, "excel", "excel公共工具", "common_excel"),
 
     /** 对外暴露接口 */
     EXTERNAL(504, "api", "对外暴露接口", "api"),

@@ -20,6 +20,11 @@ public enum CodeMsgEnum {
     REDIS_LOCK_TIME_OUT(ModuleEnum.COMMON, 2, "设置Redis锁超时"),
     /** 被执行方法产生了一个Exception */
     REDIS_LOCK_THROW(ModuleEnum.COMMON, 3, "被执行方法产生了一个异常"),
+
+
+    /** Excel导出数据量过大,请修改查询条件 */
+    EXCEL_EXPORT_TOO_MUCH(ModuleEnum.COMMON,1, "Excel导出数据量过大,请修改查询条件"),
+    EXCEL_EXPORT_CLASS_CASE(ModuleEnum.COMMON,2, "Excel导出类型转换异常,bodyList格式不正确"),
     ;
 
     /**

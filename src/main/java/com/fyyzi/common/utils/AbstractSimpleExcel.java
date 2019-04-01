@@ -1,5 +1,7 @@
 package com.fyyzi.common.utils;
 
+import com.fyyzi.common.enums.CodeMsgEnum;
+import com.fyyzi.exceptions.ExcelException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -28,7 +30,9 @@ public abstract class AbstractSimpleExcel<E> {
      * 获取Excel对象
      *
      * @return 直接从Controller返回即可实现导出
+     * @SuperWarning 抑制类继承层数过高的异常(Sonar)
      */
+    @SuppressWarnings("squid:MaximumInheritanceDepth")
     public AbstractXlsxView getExcel() {
         return new AbstractXlsxView() {
             @Override
@@ -46,22 +50,20 @@ public abstract class AbstractSimpleExcel<E> {
     /**
      * 添加Header信息
      *
-     * @param cellValues 请将数据添加至该对象中
-     * @return List<String>
+     * @param cellValues 请将Excel表头数据添加至该对象中
      */
-    public abstract List<String> createHeaderCellValueList(List<String> cellValues);
+    public abstract void createHeaderCellValueList(List<String> cellValues);
 
     /**
      * 将model数据add至List中
      *
-     * @param cellValues
-     * @param model
-     * @return {@link List<Object>}
+     * @param cellValues 将model中的具体内容映射到Excel相应位置中 cellValues.add(model.getId)
+     * @param model      {@link E}
      */
-    public abstract List<Object> createBodyCellValuesList(List<Object> cellValues, E model);
+    public abstract void createBodyCellValuesList(List<Object> cellValues, E model);
 
     /** excel 最大行数 */
-    private static final int MAXROW = 1 << 16;
+    private static final int MAX_ROW = 1 << 16;
     /** 文件名 */
     protected String fileName;
     /** sheet页名 */
@@ -70,21 +72,22 @@ public abstract class AbstractSimpleExcel<E> {
     protected List<E> bodyList;
 
     /** header字体 */
-    public static final String HEADER_FONT_NAME = "微软雅黑";
+    protected static final String HEADER_FONT_NAME = "微软雅黑";
     /** body字体 */
-    public static final String BODY_FONT_NAME = "宋体";
+    protected static final String BODY_FONT_NAME = "宋体";
 
     /** 执行Excel宽度自适应方法的行阈值 */
-    public static final int AUTO_SIZE_COLUMN_ROW_THRESHOLD = 1 << 11;
+    protected static final int AUTO_SIZE_COLUMN_ROW_THRESHOLD = 1 << 11;
     /** 日期格式化 */
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    /** 语言 */
+    /** 语言(中文) */
     private static final String LANGUAGE_ZH = "zh";
+    /** 语言(英文) */
     private static final String LANGUAGE_EN = "en";
 
     /** BigDecimal格式化 */
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.00");
+    protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.00");
 
     /**
      * @param fileName  文件名
@@ -95,8 +98,8 @@ public abstract class AbstractSimpleExcel<E> {
         super();
         this.fileName = fileName;
         this.sheetName = sheetName;
-        if (bodyList.size() >= MAXROW) {
-//            throw new ExcelException(APIStatus.ERROR_519);
+        if (bodyList.size() >= MAX_ROW) {
+            throw new ExcelException(CodeMsgEnum.EXCEL_EXPORT_TOO_MUCH);
         }
         this.bodyList = bodyList;
     }
@@ -113,15 +116,12 @@ public abstract class AbstractSimpleExcel<E> {
     }
 
     /**
-     * <p>Description: [该方法用于拓展sheet页]<p>
-     * Created on 2018年10月14日 下午1:05:21
+     * 该方法用于拓展sheet页
      *
-     * @param workbook
-     * @author <a href="mailto: xiyang@camelotchina.com">息阳</a>
-     * @version 1.0
-     * Copyright (c) 2018年 北京柯莱特科技有限公司
+     * @param workbook {@link Workbook}
      */
-    protected void createOtherSheet(Workbook workbook) {
+    public void createOtherSheet(Workbook workbook) {
+        // 该方法用于拓展sheet页
     }
 
     /**
@@ -160,15 +160,11 @@ public abstract class AbstractSimpleExcel<E> {
     }
 
     /**
-     * <p>Description: [将bodyList数据添加到Excel body里面]<p>
-     * Created on 2018年10月9日 下午7:13:36
+     * 将bodyList数据添加到Excel body里面
      *
      * @param workbook {@link Workbook}
      * @param sheet    Sheet页
      * @param bodyList bodyList
-     * @author <a href="mailto: xiyang@camelotchina.com">息阳</a>
-     * @version 1.0
-     * Copyright (c) 2018年 北京柯莱特科技有限公司
      */
     protected final void addSheetBody(Workbook workbook, Sheet sheet, List<?> bodyList) {
         boolean rowNumerFlag = false;
@@ -207,8 +203,9 @@ public abstract class AbstractSimpleExcel<E> {
     /**
      * 将 数据  添加到cellValues内
      *
-     * @param t
-     * @param cellValues //     * @throws ExcelException bodyList格式不正确
+     * @param t          判断 如果类型为 List 则将其添加到cellValues中
+     * @param cellValues Excel内容
+     * @throws ExcelException bodyList格式不正确
      */
     private void addObjectToCellValue(Object t, List<Object> cellValues) {
         if (t instanceof List<?>) {
@@ -219,19 +216,15 @@ public abstract class AbstractSimpleExcel<E> {
             }
             return;
         }
-//        throw new ExcelException(000, "bodyList格式不正确", null);
+        throw new ExcelException(CodeMsgEnum.EXCEL_EXPORT_CLASS_CASE);
     }
 
 
     /**
-     * <p>Description: [设置Header样式]<p>
-     * Created on 2018年10月9日 下午3:07:49
+     * 设置Header样式
      *
-     * @param workbook
-     * @param sheet
-     * @author <a href="mailto: xiyang@camelotchina.com">息阳</a>
-     * @version 1.0
-     * Copyright (c) 2018年 北京柯莱特科技有限公司
+     * @param workbook {@link Workbook}
+     * @param sheet    {@link Sheet}
      */
     public static CellStyle setHeaderStyle(Workbook workbook, Sheet sheet) {
         Row header = sheet.getRow(sheet.getFirstRowNum());
@@ -269,15 +262,11 @@ public abstract class AbstractSimpleExcel<E> {
     }
 
     /**
-     * <p>Description: [设置Body样式]<p>
-     * Created on 2018年10月9日 下午3:08:18
+     * 设置Body样式
      *
-     * @param workbook
-     * @param sheet
-     * @return
-     * @author <a href="mailto: xiyang@camelotchina.com">息阳</a>
-     * @version 1.0
-     * Copyright (c) 2018年 北京柯莱特科技有限公司
+     * @param workbook {@link Workbook}
+     * @param sheet    {@link Sheet}
+     * @return {@link CellStyle}
      */
     public static CellStyle setBodyStyle(Workbook workbook, Sheet sheet) {
 
@@ -360,8 +349,14 @@ public abstract class AbstractSimpleExcel<E> {
         return column;
     }
 
-    private static void decimalFormat(BigDecimal object, Cell cell) {
-        BigDecimal obj = object;
+    /**
+     * BigDecimal 格式化
+     *
+     * @param bigDecimal {@link BigDecimal}
+     * @param cell       {@link Cell}
+     */
+    private static void decimalFormat(BigDecimal bigDecimal, Cell cell) {
+        BigDecimal obj = bigDecimal;
         cell.setCellType(CellType.STRING);
         String s = DECIMAL_FORMAT.format(obj);
         if (obj.compareTo(BigDecimal.ZERO) == 0) {
@@ -373,6 +368,13 @@ public abstract class AbstractSimpleExcel<E> {
         }
     }
 
+    /**
+     * 将CellValue放入Cell中(Excel对应的位置)
+     *
+     * @param cellValue   Excel单元格的内容
+     * @param cell        {@link Cell} Excel单元格
+     * @param setCellFlag 是否执行
+     */
     private static void setCellValue(String cellValue, Cell cell, boolean setCellFlag) {
         if (setCellFlag) {
             cell.setCellValue(cellValue);
@@ -380,13 +382,9 @@ public abstract class AbstractSimpleExcel<E> {
     }
 
     /**
-     * <p>Description: [Sheet页宽度自适应]<p>
-     * Created on 2018年10月9日 下午2:28:06
+     * Sheet页宽度自适应
      *
-     * @param sheet
-     * @author <a href="mailto: xiyang@camelotchina.com">息阳</a>
-     * @version 1.0
-     * Copyright (c) 2018年 北京柯莱特科技有限公司
+     * @param sheet {@link Sheet} Sheet页对象
      */
     public static void setSizeColumn(Sheet sheet) {
         int physicalNumberOfCells = sheet.getRow(sheet.getFirstRowNum()).getPhysicalNumberOfCells();
@@ -399,7 +397,7 @@ public abstract class AbstractSimpleExcel<E> {
     /**
      * 自适应宽度(中文支持)
      *
-     * @param sheet sheet
+     * @param sheet {@link Sheet} sheet页对象
      */
     public static void autoSizeColumn(Sheet sheet) {
         int physicalNumberOfCells = sheet.getRow(sheet.getFirstRowNum()).getPhysicalNumberOfCells();
