@@ -2,7 +2,7 @@ package com.fyyzi.service;
 
 import com.fyyzi.entity.HttpControllerLog;
 
-public interface HttpControllerLogService {
+public interface HttpLogService {
     /**
      * 根据ID查询
      * @param id {@link Long}

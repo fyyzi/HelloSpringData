@@ -1,11 +1,12 @@
 package com.fyyzi.common.aop;
 
-import com.fyyzi.service.HttpControllerLogService;
+import com.fyyzi.service.HttpLogService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,33 +21,12 @@ import org.springframework.stereotype.Component;
 public class HttpLogAop {
 
     @Autowired
-    private HttpControllerLogService httpControllerLogService;
+    private HttpLogService httpControllerLogService;
 
     /** 切入点表达式 */
     @Pointcut("execution(public * com.fyyzi.web.*.*(..) )")
     public void httpLogPoint() {
         // 这是一个切入点表达式的声明类,所以里面什么都不做
-    }
-
-    /**
-     * 前置通知
-     *
-     * @param joinPoint {@link JoinPoint}
-     */
-    @Before("httpLogPoint()")
-    public void before(JoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-        String s = objectToJson(args);
-    }
-
-    /**
-     * 后置通知
-     *
-     * @param result 方法返回值
-     */
-    @AfterReturning(value = "httpLogPoint()", returning = "result")
-    public void after(Object result) {
-        String s = objectToJson(result);
     }
 
     /**

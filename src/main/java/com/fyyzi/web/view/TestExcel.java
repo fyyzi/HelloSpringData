@@ -5,6 +5,11 @@ import com.fyyzi.entity.User;
 
 import java.util.List;
 
+/**
+ * 打个样
+ *
+ * @author 息阳
+ */
 public class TestExcel extends AbstractSimpleExcel<User> {
 
     /**
@@ -17,14 +22,12 @@ public class TestExcel extends AbstractSimpleExcel<User> {
     }
 
     @Override
-    public List<String> createHeaderCellValueList(List<String> cellValues) {
+    public void createHeaderCellValueList(List<String> cellValues) {
         cellValues.add("123");
-        return null;
     }
 
     @Override
-    public List<Object> createBodyCellValuesList(List<Object> cellValues, User model) {
+    public void createBodyCellValuesList(List<Object> cellValues, User model) {
         cellValues.add(model.getPeople());
-        return null;
     }
 }

@@ -2,7 +2,7 @@ package com.fyyzi.service.impl;
 
 import com.fyyzi.dao.HttpControllerLogRepository;
 import com.fyyzi.entity.HttpControllerLog;
-import com.fyyzi.service.HttpControllerLogService;
+import com.fyyzi.service.HttpLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class HttpControllerLogServiceImpl implements HttpControllerLogService {
+public class HttpLogServiceImpl implements HttpLogService {
 
     @Autowired
     private HttpControllerLogRepository httpControllerLogRepository;
@@ -18,7 +18,10 @@ public class HttpControllerLogServiceImpl implements HttpControllerLogService {
     @Override
     public HttpControllerLog getById(Long id) {
         Optional<HttpControllerLog> byId = httpControllerLogRepository.findById(id);
-        byId.isPresent();
+        boolean present = false;
+        while (!present) {
+            present = byId.isPresent();
+        }
         return byId.get();
     }
 
